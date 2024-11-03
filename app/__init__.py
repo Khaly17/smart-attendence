@@ -17,7 +17,7 @@ def create_app():
     migrate.init_app(app, db)
 
 
-    CORS(app, resources={r"/*": {"origins": "http://localhost:4200"}})
+    CORS(app, resources={r"/*": {"origins": "http://localhost:4200,https://smart-attendence-esge.web.app/"}})
     # Importer les modèles après l'initialisation de l'application
     from app.models import user, attendance
 
