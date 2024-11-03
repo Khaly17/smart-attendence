@@ -4,7 +4,7 @@ import paho.mqtt.client as mqtt
 mqtt_broker_url = "test.mosquitto.org"  # Utilise le broker Mosquitto public
 mqtt_broker_port = 1883                 # Port standard pour MQTT
 topic = "attendance/topic"              # Topic où publier les messages
-badge_id = "12345"                      # Simuler un badge_id pour un utilisateur
+badge_id = "741258"                      # Simuler un badge_id pour un utilisateur
 
 # Callback lors de la connexion réussie au broker MQTT
 def on_connect(client, userdata, flags, rc):
@@ -40,3 +40,5 @@ time.sleep(5)
 # Arrêter la boucle et terminer
 client.loop_stop()
 print("Fin du script de publication MQTT.")
+
+
