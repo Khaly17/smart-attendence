@@ -1,6 +1,7 @@
 # app/utils/mqtt_client.py
 import paho.mqtt.client as mqtt
-from datetime import datetime
+from datetime import datetime, time
+from sqlalchemy import and_
 
 def on_connect(client, userdata, flags, rc):
     """Callback lors de la connexion réussie au broker MQTT."""
@@ -27,11 +28,34 @@ def on_message(client, userdata, message):
         user = User.query.filter_by(badge_id=badge_id).first()
 
         if user:
-            # Enregistrer la présence
-            new_attendance = Attendance(user_id=user.id)
-            db.session.add(new_attendance)
+            # Vérifier la dernière entrée de présence de l'utilisateur sans sortie pour aujourd'hui
+            today = datetime.now().date()
+            latest_entry = Attendance.query.filter(
+                and_(
+                    Attendance.user_id == user.id,
+                    Attendance.entry_time != None,
+                    Attendance.exit_time == None,
+                    Attendance.entry_time >= datetime(today.year, today.month, today.day)
+                )
+            ).order_by(Attendance.entry_time.desc()).first()
+
+            if latest_entry:
+                # Si une entrée sans sortie existe, c'est une sortie
+                latest_entry.exit_time = datetime.now()
+                latest_entry.event_type = 'exit'
+                print(f"Exit time logged for user: {user.name} at {latest_entry.exit_time}")
+            else:
+                current_time = datetime.now().time()
+                status = "Present"
+                if current_time > time(4, 0):  # Si l'heure est après 8:00 AM
+                    status = "En Retard"
+                # Sinon, c'est une nouvelle entrée
+                new_attendance = Attendance(user_id=user.id, entry_time=datetime.now(), status=status, event_type="entry")
+                db.session.add(new_attendance)
+                print(f"Entry time logged for user: {user.name} at {new_attendance.entry_time}")
+
+            # Sauvegarder les changements
             db.session.commit()
-            print(f"Attendance logged for user: {user.name} at {new_attendance.timestamp}")
         else:
             print(f"No user found with badge_id: {badge_id}")
 
