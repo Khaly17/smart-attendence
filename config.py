@@ -15,9 +15,6 @@ class Config:
         f'@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}'
     )
 
-    URI = "postgresql://uce6kgae6q68vb:p730fd6dd54cc326d92bdcabce6fe9e8dfc8b636d4916fd1331b8f54b6f3447f4@cd27da2sn4hj7h.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/d16ap676eq1da9"
-    SQLALCHEMY_DATABASE_URI = (URI)
-
     # Configuration du broker MQTT
     MQTT_BROKER_URL = os.getenv('MQTT_BROKER_URL', 'test.mosquitto.org')
     MQTT_BROKER_PORT = int(os.getenv('MQTT_BROKER_PORT', 1883))  # Port du broker MQTT
